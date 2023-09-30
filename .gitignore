@@ -2,7 +2,7 @@
 raw/*.json
 
 # Datos procesados
-procesado/*.csv
+preprocesado/*.csv
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

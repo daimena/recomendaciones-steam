@@ -13,8 +13,18 @@ Para comenzar, se deben guardar los archivos crudos `australian_user_reviews.jso
 
 ## Extracción de Datos
 
-El primer paso consiste en preprocesar los archivos JSON del directorio [`raw`](./raw) para transformarlos en archivos CSV que se guardarán en el directorio `preprocesado`. Además de realizar desaniaciones y ajustes menores, aquellos campos que no sean relevantes no serán guardados en los CSV.
+El primer paso consiste en preprocesar los archivos JSON del directorio [`raw`](./raw) para transformarlos en archivos CSV que se guardarán en el directorio `preprocesado`. Además de realizar desanidaciones y ajustes menores, aquellos campos que no sean relevantes no serán guardados en los CSV.
 
 ```bash
 $ python extraccion.py
 ```
+
+## Analisis de sentimiento
+
+Utilizando el [modelo roBERTa-base para analisis de sentimiento](https://huggingface.co/cardiffnlp/twitter-roberta-base-sentiment), para convertir las reviews del archivo `australian_user_reviews.csv` en  una nueva columna 'sentiment' con el sentimiento de la review de acuerdo a la escala: '0' si es negativo, '1' si es neutro y '2' si es positivo.
+
+```bash
+$ python analisis-de-sentimientos.py
+```
+
+
