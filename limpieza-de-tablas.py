@@ -25,5 +25,7 @@ with psycopg2.connect(dbname="recomendaciones_steam", user="postgres", password=
 
     # TODO: considerar eliminar reviews de usuarios con un tiempo de juego menor a cierto valor.
 
+    # TODO: considerar tener en cuenta que ciertos juegos tienen muy pocas (o una) review.
+
     print("Limpieza completa")
     conn.commit()
