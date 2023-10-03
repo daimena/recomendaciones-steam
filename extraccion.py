@@ -75,17 +75,19 @@ def extraccion_games():
     # recomendaciones, pero por ahora sólo usamos los géneros.
     games = pd.DataFrame(games, columns=['id', 'app_name', 'release_date', 'genres'])
     games.dropna(how='all', inplace=True)
+    games.dropna(subset='id', inplace=True)
+    games.drop_duplicates(keep='first', subset=['id'], inplace=True)
 
     # El campo 'release_date' tiene la fecha de publicación, pero sólo nos interesa el áño. Definimos una función que lo
     # extrae
     def extraer_año(date):
-        # La fecha de publicación está en formato YYYY-MM-DD. Extraemos el año con una expresión regular. No todos los
-        # juegos tienen fecha de publicación.
+        # La fecha de publicación está en formato YYYY-MM-DD. Extraemos el año con una expresión regular
         try:
             result = re.search("(\d*)-\d*-\d*", date)
             return int(result.group(1))
         except:
-            return None
+            # No todos los juegos tienen fecha de publicación, para estos usamos el valor centinela 0 que indica año desconocido
+            return 0
 
     print("Extrayendo el año de publicación")
 
@@ -98,7 +100,9 @@ def extraccion_games():
     # Cada juego tiene múltiples géneros. Queremos separar esto para tener una tabla auxiliar donde cada fila indica
     # un género de un juego.
     games_genres = games[['id', 'genres']]
+    games_genres = games_genres.dropna(how='any')
     games_genres = games_genres.explode('genres')
+    games_genres.drop_duplicates(keep='first', inplace=True)
 
     # Como game_genres ya tiene los géneros de cada juego, los podemos sacar de la entidad games.
     games.drop(columns=['genres'], inplace=True)
@@ -135,9 +139,11 @@ def extraccion_items():
             })
 
     items = pd.DataFrame(items, columns=['user_id', 'item_id', 'playtime_forever'])
+    items.drop_duplicates(keep='first', inplace=True)
+
     items.to_csv(ARCHIVO_DESTINO, index=False)
     print("Entidad items guardada en", ARCHIVO_DESTINO)
 
-extraccion_reviews()
+#extraccion_reviews()
 extraccion_games()
 extraccion_items()
