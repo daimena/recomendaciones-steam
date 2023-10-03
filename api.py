@@ -1,12 +1,18 @@
 import psycopg2
 from fastapi import FastAPI, HTTPException
 
+from recomendador import recomendar_similares
+
 app = FastAPI()
 
 # Definimos las funciones que se utilizaran para realizar las consultas en la API
 
+@app.get("/recommended/{item_id}")
+def recommended(item_id):
+    return { 'recommended': recomendar_similares(item_id) }
+
 # Funcion PlayTimeGenre
-@app.get("/playtime/{genero}")
+@app.get("/playtimegenre/{genero}")
 def PlayTimeGenre(genero):
         with psycopg2.connect(dbname="postgres", user="postgres", password="postgres") as conn:
             cur = conn.cursor()
@@ -23,7 +29,7 @@ def PlayTimeGenre(genero):
 
 
 # Funcion UserForGenre
-@app.get("/userfor/{genero}")
+@app.get("/userforgenre/{genero}")
 def UserForGenre(genero):
         with psycopg2.connect(dbname="postgres", user="postgres", password="postgres") as conn:
             cur = conn.cursor()

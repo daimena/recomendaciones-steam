@@ -3,6 +3,8 @@ import pandas as pd
 from sklearn.metrics.pairwise import cosine_similarity
 
 def recomendar_similares(item_id):
+    item_id = int(item_id)
+
     # Vamos a realizar un analisis de similitud utilizando los géneros de los juegos, el sentimiento global
     # obtenido de las reviews, y el tiempo de juego promedio.
 
@@ -11,13 +13,15 @@ def recomendar_similares(item_id):
     # Utilizamos One Hot Encoding para crear nuevas columnas por cada género, de modo que se pueda realizar
     # el análisis de comparación por similitud de coseno.
     df = one_hot_encoding(df, 'genre').groupby(['item_id', 'sentiment', 'playtime']).any().reset_index()
+    df.set_index('item_id', inplace=True)
 
     df['similitud'] = calcular_similitud(df, item_id)
     
     # Una vez que tenemos la columna de similitud, eliminamos la entrada correspondiente al juego requerido
-    # (la cual debería tener similitud de 1), y tomamlos las siguiente 5 mayores.
-    df = df.loc[df['item_id'] != item_id].nlargest(5, columns='similitud')
-    item_ids = [int(id) for id in df['item_id'].values]
+    # (la cual debería tener similitud de 1), y tomamos las siguiente 5 mayores.
+    
+    df = df.drop([item_id]).nlargest(5, columns='similitud')
+    item_ids = [int(id) for id in df.index]
 
     # Conociendo ya los juegos más similares, podemos traer el resto de información relevante acerca de ellos
     # (nombre, año de publicación, etc.).
@@ -42,9 +46,9 @@ def get_candidatos(item_id):
                     )
                 GROUP BY item_id
             ) AS candidatos
-            FULL JOIN game_genres
+            LEFT JOIN game_genres
                 ON candidatos.item_id = game_genres.item_id
-            FULL JOIN games_aux
+            LEFT JOIN games_aux
                 ON candidatos.item_id = games_aux.item_id;
             ''', (item_id,))
 
@@ -56,7 +60,7 @@ def one_hot_encoding(df, columna):
     return combine.drop(columns=[columna])
 
 def calcular_similitud(df, item_id):
-    input = df.loc[df['item_id'] == item_id].values.reshape(1, -1)
+    input = df.loc[item_id].values.reshape(1, -1)
     return df.apply(lambda f: cosine_similarity(f.values.reshape(1, -1), input)[0][0], axis=1)
 
 def get_games_metadata(item_ids):
