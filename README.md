@@ -148,9 +148,9 @@ $ python recomendador.py --item-id 10
 
 ## API
 Uitilizando el framework [FastAPI](https://fastapi.tiangolo.com/), se definieron las siguientes consultas para realizar a traves de la API:
-- PlayTimeGenre(genero): Rercibe un genero y entrega el año de lanzamiento con más horas jugadas para el género dado.
-- UserForGenre(genero): Recibe un genero y entrega el id del usuario con más horas jugadas para el género dado y un listado con las horas jugadas para cada año.
-- UsersRecommend(año): Recibe un año y entrega los 3 juegos con más recomendaciones (incluyendo reviews positivas, neutras y que hayan marcado True para 'Recommend').
-- UsersNotRecommend(año): Recibe un año y entrega los 3 juegos con más recomendaciones negativas (incluyendo reviewsnegativas y que hayan marcado False para 'Recommend').
-- SentimentAnalysis(año): Recibe un año y entrega el numero de reviews positivas, neutras y negativas que se realizaron ese año.
-- Recommended(item_id): Recibe un identificador de juego y entrega 5 juegos similares (importando la funcion recommend del scipt [recomendador](recomendador.py))
+- `PlayTimeGenre(genero)`: Rercibe un genero y entrega el año de lanzamiento con más horas jugadas para el género dado.
+- `UserForGenre(genero)`: Recibe un genero y entrega el id del usuario con más horas jugadas para el género dado y un listado con las horas jugadas para cada año.
+- `UsersRecommend(año)`: Recibe un año y entrega los 3 juegos con más recomendaciones (incluyendo reviews positivas, neutras y que hayan marcado True para 'Recommend').
+- `UsersNotRecommend(año)`: Recibe un año y entrega los 3 juegos con más recomendaciones negativas (incluyendo reviewsnegativas y que hayan marcado False para 'Recommend').
+- `SentimentAnalysis(año)`: Recibe un año y entrega el numero de reviews positivas, neutras y negativas que se realizaron ese año.
+- `Recommended(item_id)`: Recibe un identificador de juego y entrega 5 juegos similares (importando la funcion `recommend_games` de [`recomendador.py`](recomendador.py))
