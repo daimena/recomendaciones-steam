@@ -1,8 +1,13 @@
 import psycopg2
 import pandas as pd
 from sklearn.metrics.pairwise import cosine_similarity
-
 import argparse
+import os
+
+POSTGRES_DBNAME = os.environ['POSTGRES_DBNAME']
+POSTGRES_USER = os.environ['POSTGRES_USER']
+POSTGRES_PASSWORD = os.environ['POSTGRES_PASSWORD']
+POSTGRES_HOST = os.environ['POSTGRES_HOST']
 
 def recomendar_similares(item_id):
     item_id = int(item_id)
@@ -35,7 +40,7 @@ def get_candidatos(item_id):
     # sólo sean considerados aquellos juegos que comparten al menos un género con el juego objetivo.
     # Nótese que no todos los juegos tienen reviews o playtime, pero estos valores son requeridos por el
     # modelo. En caso de faltar, colocamos el valor 0.
-    with psycopg2.connect(dbname="recomendaciones_steam", user="postgres", password="postgres") as conn:
+    with psycopg2.connect(dbname=POSTGRES_DBNAME, user=POSTGRES_USER, password=POSTGRES_PASSWORD, host=POSTGRES_HOST) as conn:
         cur = conn.cursor()
         cur.execute('''
             SELECT candidatos.item_id,  game_genres.genre, COALESCE(games_aux.overall_review_sentiment, 0), COALESCE(games_aux.norm_average_playtime, 0)
@@ -52,7 +57,7 @@ def get_candidatos(item_id):
                 ON candidatos.item_id = game_genres.item_id
             LEFT JOIN games_aux
                 ON candidatos.item_id = games_aux.item_id;
-            ''', (item_id,), page_size = 10000)
+            ''', (item_id,))
 
     return cur.fetchall()
 

@@ -154,3 +154,10 @@ Uitilizando el framework [FastAPI](https://fastapi.tiangolo.com/), se definieron
 - `UsersNotRecommend(año)`: Recibe un año y entrega los 3 juegos con más recomendaciones negativas (incluyendo reviewsnegativas y que hayan marcado False para 'Recommend').
 - `SentimentAnalysis(año)`: Recibe un año y entrega el numero de reviews positivas, neutras y negativas que se realizaron ese año.
 - `Recommended(item_id)`: Recibe un identificador de juego y entrega 5 juegos similares (importando la funcion `recommend_games` de [`recomendador.py`](recomendador.py))
+
+La API se puede correr utilizando el servidor `uvicorn` mediante:
+```bash
+$ uvicorn api:app --reload
+```
+
+Previo a eso, es necesario configurar las variables de entorno `POSTGRES_DBNAME`, `POSTGRES_USER`, `POSTGRES_PASSWORD` y `POSTGRES_HOST` con los parámetros de conexión de la base de datos.

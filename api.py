@@ -1,11 +1,14 @@
 import psycopg2
-from fastapi import FastAPI, HTTPException
-
+from fastapi import FastAPI
 from recomendador import recomendar_similares
+import os
+
+POSTGRES_DBNAME = os.environ['POSTGRES_DBNAME']
+POSTGRES_USER = os.environ['POSTGRES_USER']
+POSTGRES_PASSWORD = os.environ['POSTGRES_PASSWORD']
+POSTGRES_HOST = os.environ['POSTGRES_HOST']
 
 app = FastAPI()
-
-# Definimos las funciones que se utilizaran para realizar las consultas en la API
 
 @app.get("/recommended/{item_id}")
 def recommended(item_id):
@@ -14,7 +17,7 @@ def recommended(item_id):
 # Funcion PlayTimeGenre
 @app.get("/playtimegenre/{genero}")
 def PlayTimeGenre(genero):
-        with psycopg2.connect(dbname="postgres", user="postgres", password="postgres") as conn:
+        with psycopg2.connect(dbname=POSTGRES_DBNAME, user=POSTGRES_USER, password=POSTGRES_PASSWORD, host=POSTGRES_HOST) as conn:
             cur = conn.cursor()
             cur.execute('''SELECT games.year_release AS anio
                             FROM games JOIN game_genres ON games.item_id = game_genres.item_id
@@ -22,7 +25,7 @@ def PlayTimeGenre(genero):
                             GROUP BY game_genres.genre, anio
                             HAVING genre = %s
                             ORDER by SUM(playtime.playtime) DESC
-                            LIMIT 1;''', (genero,), page_size = 10000)
+                            LIMIT 1;''', (genero,))
             
             (anio,) = cur.fetchone()
         return {"Año de lanzamiento con más horas jugadas para el género ": anio}        
@@ -31,7 +34,7 @@ def PlayTimeGenre(genero):
 # Funcion UserForGenre
 @app.get("/userforgenre/{genero}")
 def UserForGenre(genero):
-        with psycopg2.connect(dbname="postgres", user="postgres", password="postgres") as conn:
+        with psycopg2.connect(dbname=POSTGRES_DBNAME, user=POSTGRES_USER, password=POSTGRES_PASSWORD, host=POSTGRES_HOST) as conn:
             cur = conn.cursor()
             cur.execute('''SELECT playtime.user_id AS usuario, SUM(playtime.playtime)/60 AS hrs_jugadas
                             FROM (SELECT * FROM game_genres 
@@ -40,7 +43,7 @@ def UserForGenre(genero):
                             JOIN playtime ON games.item_id = playtime.item_id
                             GROUP BY usuario
                             ORDER BY hrs_jugadas DESC
-                            LIMIT 1;''', (genero,), page_size = 10000)
+                            LIMIT 1;''', (genero,))
             
             (usuario, _) = cur.fetchone()
 
@@ -53,7 +56,7 @@ def UserForGenre(genero):
                                 GROUP BY usuario, anio) AS t
                             WHERE t.usuario = %s
                             GROUP BY t.usuario, t.anio, t.hrs_jugadas
-                            ORDER BY t.anio DESC;''', (usuario,), page_size = 10000)
+                            ORDER BY t.anio DESC;''', (usuario,))
             anios_hora_tuplas = cur.fetchall()
 
             # La query devuelve un array de tuplas (anio, horas). Quiero convertir esto a un diccionario donde las claves son
@@ -70,7 +73,7 @@ def UserForGenre(genero):
 @app.get("/usersrecommend/{anio}")
 def UsersRecoommend(anio):
     anio_int = int(anio)
-    with psycopg2.connect(dbname="postgres", user="postgres", password="postgres") as conn:
+    with psycopg2.connect(dbname=POSTGRES_DBNAME, user=POSTGRES_USER, password=POSTGRES_PASSWORD, host=POSTGRES_HOST) as conn:
         cur = conn.cursor()
         cur.execute('''SELECT games.item_name
                         FROM (SELECT item_id, year_review as anio, count(recommend) as recomendaciones, count(sentiment) as sentiment
@@ -81,7 +84,7 @@ def UsersRecoommend(anio):
                         GROUP BY games.item_id, games.item_name, r.anio, r.recomendaciones, r.sentiment
                         HAVING anio = %s
                         ORDER BY r.recomendaciones DESC
-                        LIMIT 3;''', (anio_int,), page_size = 10000)
+                        LIMIT 3;''', (anio_int,))
         
         juegos = cur.fetchall()
         print(juegos)
@@ -98,7 +101,7 @@ def UsersRecoommend(anio):
 @app.get("/usersnotrecommend/{anio}")
 def UsersNotRecoommend(anio):
     anio_int = int(anio)
-    with psycopg2.connect(dbname="postgres", user="postgres", password="postgres") as conn:
+    with psycopg2.connect(dbname=POSTGRES_DBNAME, user=POSTGRES_USER, password=POSTGRES_PASSWORD, host=POSTGRES_HOST) as conn:
         cur = conn.cursor()
         cur.execute('''SELECT games.item_name
                         FROM (SELECT item_id, year_review as anio, count(recommend) as recomendaciones, count(sentiment) as sentiment
@@ -109,7 +112,7 @@ def UsersNotRecoommend(anio):
                         GROUP BY games.item_id, games.item_name, r.anio, r.recomendaciones, r.sentiment
                         HAVING anio = %s
                         ORDER BY r.recomendaciones DESC
-                        LIMIT 3;''', (anio_int,), page_size = 10000)
+                        LIMIT 3;''', (anio_int,))
         
         juegos = cur.fetchall()
         print(juegos)
@@ -126,7 +129,7 @@ def UsersNotRecoommend(anio):
 @app.get("/sentimentanalysis/{anio}")
 def SentimentAnalysis(anio):
         anio_int = int(anio)
-        with psycopg2.connect(dbname="postgres", user="postgres", password="postgres") as conn:
+        with psycopg2.connect(dbname=POSTGRES_DBNAME, user=POSTGRES_USER, password=POSTGRES_PASSWORD, host=POSTGRES_HOST) as conn:
             cur = conn.cursor()
             cur.execute('''SELECT count(r.sentiment) as positivos
                             FROM (SELECT item_id, sentiment
@@ -134,7 +137,7 @@ def SentimentAnalysis(anio):
                                     WHERE sentiment =2) AS r
                             JOIN games ON r.item_id = games.item_id
                             GROUP BY games.year_release
-                            HAVING games.year_release =%s;''', (anio_int,), page_size = 10000)
+                            HAVING games.year_release =%s;''', (anio_int,))
             (positivas,) = cur.fetchone()
             cur.execute('''SELECT count(r.sentiment) as positivos
                             FROM (SELECT item_id, sentiment
@@ -142,7 +145,7 @@ def SentimentAnalysis(anio):
                                     WHERE sentiment =1) AS r
                             JOIN games ON r.item_id = games.item_id
                             GROUP BY games.year_release
-                            HAVING games.year_release =%s;''', (anio_int,), page_size = 10000)
+                            HAVING games.year_release =%s;''', (anio_int,))
             (neutras,) = cur.fetchone()
             cur.execute('''SELECT count(r.sentiment) as positivos
                             FROM (SELECT item_id, sentiment
@@ -150,7 +153,7 @@ def SentimentAnalysis(anio):
                                     WHERE sentiment =0) AS r
                             JOIN games ON r.item_id = games.item_id
                             GROUP BY games.year_release
-                            HAVING games.year_release =%s;''', (anio_int,), page_size = 10000)
+                            HAVING games.year_release =%s;''', (anio_int,))
             (negativas,) = cur.fetchone()
             print(positivas)
         return {"Positivas": positivas, "Neutras": neutras, "Negativas": negativas}
