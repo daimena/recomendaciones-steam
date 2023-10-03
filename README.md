@@ -8,6 +8,7 @@ Los scripts fueron desarrollados con Python 3 v3.8.10, y las siguientes dependen
 
 - [`pandas` v2.0.3](https://pandas.pydata.org/)
 - [`tqdm` v4.66.1](https://github.com/tqdm/tqdm)
+- [`psycopg2` v2.9.8](https://www.psycopg.org/)
 
 Para comenzar, se deben guardar los archivos crudos `australian_user_reviews.json`, `output_steam_games.json` y `australian_users_items.json` en el directorio [`raw`](./raw).
 
@@ -98,7 +99,7 @@ Ejemplo:
 
 ## EDA
 Se realiza un analisis de los datos, utilizando las librerias: psycopg2, pandas y math.
-Las graficas analizadas y sus comentarios se encuentran en un [Jupyter Notebook](pruebas EDA.ipynb).
+Las graficas analizadas y sus comentarios se encuentran en un [Jupyter Notebook](pruebas-eda.ipynb).
 
 ### Limpieza
 
@@ -142,7 +143,6 @@ Luego, estos datos se comparan utilizando el modelo de similitud del coseno, se 
 ```bash
 $ python recomendador.py
 ```
-
 
 ## API
 Uitilizando el framework [FastAPI](https://fastapi.tiangolo.com/), se definieron las siguientes consultas para realizar a traves de la API:
