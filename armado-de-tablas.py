@@ -22,10 +22,10 @@ with psycopg2.connect(dbname=args.dbname, user=args.user, password=args.password
     cur = conn.cursor()
 
     print("Creando tablas")
-    cur.execute("CREATE TABLE IF NOT EXISTS games (item_id integer PRIMARY KEY, item_name varchar, year_release integer);")
-    cur.execute("CREATE TABLE IF NOT EXISTS game_genres (item_id integer, genre varchar);")
-    cur.execute("CREATE TABLE IF NOT EXISTS playtime (user_id varchar, item_id integer, playtime integer);")
-    cur.execute("CREATE TABLE IF NOT EXISTS reviews (user_id varchar, item_id integer, recommend boolean, year_review integer, sentiment integer);")
+    cur.execute("CREATE TABLE games (item_id integer PRIMARY KEY, item_name varchar, year_release integer);")
+    cur.execute("CREATE TABLE game_genres (item_id integer, genre varchar);")
+    cur.execute("CREATE TABLE playtime (user_id varchar, item_id integer, playtime integer);")
+    cur.execute("CREATE TABLE reviews (user_id varchar, item_id integer, recommend boolean, year_review integer, sentiment integer);")
 
     conn.commit()
 
