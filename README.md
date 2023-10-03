@@ -140,8 +140,10 @@ Tiene en cuenta:
 Se realiza un primer filtro, importando solo aquellos juegos que compartan al menos un genero con el juego solicitado.
 Luego, estos datos se comparan utilizando el modelo de similitud del coseno, se ordenan por orden de similitud descendiente y se entregan los 5 con mayor score.
 
+Se puede ejecutar el recomendador directamente ejecutando `recomendador.py` y pasando un argumento `--item-id`:
+
 ```bash
-$ python recomendador.py
+$ python recomendador.py --item-id 10
 ```
 
 ## API

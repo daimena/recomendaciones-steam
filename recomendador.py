@@ -2,6 +2,8 @@ import psycopg2
 import pandas as pd
 from sklearn.metrics.pairwise import cosine_similarity
 
+import argparse
+
 def recomendar_similares(item_id):
     item_id = int(item_id)
 
@@ -73,3 +75,9 @@ def get_games_metadata(item_ids):
             ''', (item_ids,))
 
     return [name for (name,) in cur.fetchall()]
+
+if __name__ == '__main__':
+    parser = argparse.ArgumentParser(description='Recomendado de juegos')
+    parser.add_argument('--item-id', help='ID del juego', required=True)
+    args = parser.parse_args()
+    print(recomendar_similares(args.item_id))
