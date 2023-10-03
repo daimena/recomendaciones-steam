@@ -1,0 +1,4 @@
+fastapi[all]
+psycopg2-binary
+pandas
+scikit-metrics
