@@ -1,6 +1,16 @@
 import psycopg2
 
-with psycopg2.connect(dbname="recomendaciones_steam", user="postgres", password="postgres") as conn:
+import argparse
+
+parser = argparse.ArgumentParser(description='Creación y poblado de tablas')
+parser.add_argument('--dbname', help='nombre de la base de datos', default='recomendaciones_steam')
+parser.add_argument('--user', help='nombre de usuario en la base de datos', default='postgres')
+parser.add_argument('--password', help='contraseña en la base de datos', default='postgres')
+parser.add_argument('--host', help='dirección del host', default='localhost')
+parser.add_argument('--port', help='puerto del host', default=5432)
+args = parser.parse_args()
+
+with psycopg2.connect(dbname=args.dbname, user=args.user, password=args.password, host=args.host, port=args.port) as conn:
     cur = conn.cursor()
 
     # En la tabla playtime hay muchas entradas con duración de jugado 0. Esto probablemente se debe a que
