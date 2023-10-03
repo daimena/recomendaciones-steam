@@ -1,6 +1,6 @@
 import psycopg2
 
-with psycopg2.connect(dbname="recomendaciones-steam", user="postgres", password="postgres") as conn:
+with psycopg2.connect(dbname="recomendaciones_steam", user="postgres", password="postgres") as conn:
     cur = conn.cursor()
 
     # En la tabla playtime hay muchas entradas con duración de jugado 0. Esto probablemente se debe a que
