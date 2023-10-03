@@ -22,7 +22,7 @@ def PlayTimeGenre(genero):
                             GROUP BY game_genres.genre, anio
                             HAVING genre = %s
                             ORDER by SUM(playtime.playtime) DESC
-                            LIMIT 1;''', (genero,))
+                            LIMIT 1;''', (genero,), page_size = 10000)
             
             (anio,) = cur.fetchone()
         return {"Año de lanzamiento con más horas jugadas para el género ": anio}        
@@ -40,7 +40,7 @@ def UserForGenre(genero):
                             JOIN playtime ON games.item_id = playtime.item_id
                             GROUP BY usuario
                             ORDER BY hrs_jugadas DESC
-                            LIMIT 1;''', (genero,))
+                            LIMIT 1;''', (genero,), page_size = 10000)
             
             (usuario, _) = cur.fetchone()
 
@@ -53,7 +53,7 @@ def UserForGenre(genero):
                                 GROUP BY usuario, anio) AS t
                             WHERE t.usuario = %s
                             GROUP BY t.usuario, t.anio, t.hrs_jugadas
-                            ORDER BY t.anio DESC;''', (usuario,))
+                            ORDER BY t.anio DESC;''', (usuario,), page_size = 10000)
             anios_hora_tuplas = cur.fetchall()
 
             # La query devuelve un array de tuplas (anio, horas). Quiero convertir esto a un diccionario donde las claves son
@@ -81,7 +81,7 @@ def UsersRecoommend(anio):
                         GROUP BY games.item_id, games.item_name, r.anio, r.recomendaciones, r.sentiment
                         HAVING anio = %s
                         ORDER BY r.recomendaciones DESC
-                        LIMIT 3;''', (anio_int,))
+                        LIMIT 3;''', (anio_int,), page_size = 10000)
         
         juegos = cur.fetchall()
         print(juegos)
@@ -109,7 +109,7 @@ def UsersNotRecoommend(anio):
                         GROUP BY games.item_id, games.item_name, r.anio, r.recomendaciones, r.sentiment
                         HAVING anio = %s
                         ORDER BY r.recomendaciones DESC
-                        LIMIT 3;''', (anio_int,))
+                        LIMIT 3;''', (anio_int,), page_size = 10000)
         
         juegos = cur.fetchall()
         print(juegos)
@@ -134,7 +134,7 @@ def SentimentAnalysis(anio):
                                     WHERE sentiment =2) AS r
                             JOIN games ON r.item_id = games.item_id
                             GROUP BY games.year_release
-                            HAVING games.year_release =%s;''', (anio_int,))
+                            HAVING games.year_release =%s;''', (anio_int,), page_size = 10000)
             (positivas,) = cur.fetchone()
             cur.execute('''SELECT count(r.sentiment) as positivos
                             FROM (SELECT item_id, sentiment
@@ -142,7 +142,7 @@ def SentimentAnalysis(anio):
                                     WHERE sentiment =1) AS r
                             JOIN games ON r.item_id = games.item_id
                             GROUP BY games.year_release
-                            HAVING games.year_release =%s;''', (anio_int,))
+                            HAVING games.year_release =%s;''', (anio_int,), page_size = 10000)
             (neutras,) = cur.fetchone()
             cur.execute('''SELECT count(r.sentiment) as positivos
                             FROM (SELECT item_id, sentiment
@@ -150,7 +150,7 @@ def SentimentAnalysis(anio):
                                     WHERE sentiment =0) AS r
                             JOIN games ON r.item_id = games.item_id
                             GROUP BY games.year_release
-                            HAVING games.year_release =%s;''', (anio_int,))
+                            HAVING games.year_release =%s;''', (anio_int,), page_size = 10000)
             (negativas,) = cur.fetchone()
             print(positivas)
         return {"Positivas": positivas, "Neutras": neutras, "Negativas": negativas}

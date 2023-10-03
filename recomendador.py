@@ -52,7 +52,7 @@ def get_candidatos(item_id):
                 ON candidatos.item_id = game_genres.item_id
             LEFT JOIN games_aux
                 ON candidatos.item_id = games_aux.item_id;
-            ''', (item_id,))
+            ''', (item_id,), page_size = 10000)
 
     return cur.fetchall()
 
